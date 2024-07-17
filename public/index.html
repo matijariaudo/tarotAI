@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/material-design-iconic-font/2.2.0/css/material-design-iconic-font.min.css">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
+    
+<title>Cartas de Tarot</title>
+<style>
+    .card-container {
+        display: flex;
+        height: 130px;
+    }
+
+    .card {
+        position: absolute;
+    }
+    .card:hover{
+        background-color: #dedede;
+    }
+
+    .cardShape {
+        min-width: 60px;
+        max-width: 60px; /* Ancho de cada div interno */
+        height: 100px; /* Altura de cada div interno */
+        background-color: #f0f0f0;
+        border: 1px solid #ccc;
+        text-align: center;
+        line-height: 100px; /* Alinea verticalmente el texto */
+        box-shadow: 2px 2px 22px -7px rgba(0,0,0,0.005);
+        
+    }
+    .levitar {
+            width: 100px; /* Ajusta el tamaño según sea necesario */
+            animation: levitar 5s ease-in-out infinite;
+    }
+
+    @keyframes levitar {
+        0%, 100% {
+            transform: translateY(0);
+        }
+        50% {
+            transform: translateY(-20px); /* Ajusta la altura del levitamiento */
+        }
+    }
+</style>
+</head>
+<body>
+    
+    <div class="container m-0 p-0 capa capa_0">
+        <div class="col-12" style="padding: 10px;">
+            <div class="col-12" style="padding: 10px 0px;text-align: center;text-align: center;">
+                <img src="https://64.media.tumblr.com/4598b327032543f81607a05b4edd9f49/tumblr_nujpdlx6Tf1uf2nyfo1_1280.gif" alt="" style="width: 60%;margin-top: 90px;">
+                <br>
+                <img src="https://media.tenor.com/images/d5015577b1133a47299b149b6fab1aaa/tenor.gif" alt="" style="width: 30%;margin-top: -10px;">
+            </div>
+        </div>
+    </div>
+    <div class="container m-0 p-0 capa capa_100">
+        <div class="col-12" style="padding: 10px;">
+            <div class="col-12" style="padding: 20vh 0px 10px 0px;text-align: center;text-align: center;">
+                <h3 data="translate" dataTranslate="100_1" style="margin-bottom: 30px;">Set your profile</h3>
+                <p data="translate" dataTranslate="100_2">Language</p>
+                <select name="" id="language_select" class="form-control"></select>
+                <p data="translate" dataTranslate="100_3" style="margin-top: 20px;">Your name</p>
+                <input type="text" class="form-control">
+                <button data="translate" dataTranslate="100_4" class="btn btn-primary" style="width: 100%;margin-top: 30px;" onclick="capa(2);initCards()">Continue</button>
+            </div>
+        </div>
+    </div>
+    <div class="container m-0 p-0 capa capa_1">
+        <div class="col-12" style="padding: 10px;">
+            <div class="col-12" style="padding: 10px 0px;text-align: center;">
+                <div class="col-12" style="padding-top: 30px;">
+                <img class="levitar" src="https://cdn.create.vista.com/api/media/small/509334224/stock-vector-soothsayer-fortune-teller-guessing-on-tarot-cards" style="width: 100%;">
+                </div>
+                <h3 data="translate" dataTranslate="1_1">Ask your question ...</h3>
+                <input type="text" class="form-control" id="name_form" placeholder="What's your name?" style="margin-bottom: 10px;">
+                <textarea placeholder="Input your question here" class="form-control" name="" id="question_form" style="width: 100%;margin-bottom: 20px;"></textarea>
+                <button data="translate" dataTranslate="1_2" class="btn btn-primary" style="width: 100%;" onclick="capa(2);initCards()">Make a question</button>
+             </div>
+        </div>
+    </div>
+    <div class="container m-0 p-0 capa capa_2">
+        <div class="col-12" style="padding: 10px;">
+            <button class="btn btn-primary" onclick="capa(1)">Back</button>
+            <div class="col-12" style="padding: 10px 0px;text-align: center;">
+                <h3  data="translate" dataTranslate="2_1">Choose your cards</h3>
+             </div>
+            <div class="card-container col-12 p-0"  style="padding: 0px 0px;display: none;min-height: 120px;">
+                <!-- Fin de repetición -->
+            </div>
+            <div class="col-12" id="chooseCard" data="translate" dataTranslate="2_2" style="padding: 0px 0px;text-align: center;display: none;min-height: 120px;">
+                Selected cards
+             </div>
+             <button class="btn btn-primary btn-getanswer" style="width: 100%;display: none;" onclick="capa(3);consultCard()">Get your answer now</button>
+        </div>
+    </div>
+
+    <div class="container m-0 p-0 capa capa_3">
+        <div class="col-12" style="padding: 10px;">
+            <div class="col-12" style="padding: 10px 0px;text-align: center;">
+                <h3 data="translate" dataTranslate="3_1"><img src="https://media1.giphy.com/media/pMB2fedf5H7x2jDTVw/giphy.gif?cid=6c09b952bh4qsp25wo58zz9fq0lmfb7j918mshehw8sa7dhv&ep=v1_internal_gif_by_id&rid=giphy.gif&ct=s" style="width:40px">Your fortune <img src="https://media1.giphy.com/media/pMB2fedf5H7x2jDTVw/giphy.gif?cid=6c09b952bh4qsp25wo58zz9fq0lmfb7j918mshehw8sa7dhv&ep=v1_internal_gif_by_id&rid=giphy.gif&ct=s" style="width:40px"></h3>
+             </div>
+            <div class="col-12 p-0" id="reading">
+                <!-- Fin de repetición -->
+            </div>
+            <button class="btn btn-primary" data="translate" dataTranslate="3_2" style="width: 100%;" onclick="capa(1);$('#name_form').val('');$('#question_form').val('');">Start again</button>
+        </div>
+    </div>
+    
+    <script>
+        function initCards(){
+            $(".btn-getanswer").hide() 
+            total=40;
+            totalChoose=0;
+            cardsChoose=[]
+            $("#chooseCard").hide()
+            $("#chooseCard").html("")
+            $(".card-container").html("");
+            $(".card-container").show();
+            ancho=$(".card-container").width()
+            $(".card-container").append(`
+            <div class="card cardShape" data="0" onclick="move(this)"></div>
+            `)
+            anchoCard=$(".card").width()
+            separacion=(ancho-anchoCard)/(total-1);
+            for (let x = 1; x < (total); x++) {
+                $(".card-container").append(`
+                <div class="card cardShape" style="margin-left:0px" data="${x}" onclick="move(this)"></div>
+                `)
+            }
+            mezclarCartas(separacion)
+        }
+
+        function move(e){
+            if(totalChoose<3){
+            $(e).css("margin-top","20px")
+            totalChoose++;
+            cardsChoose.push($(e).attr('data'))
+            }
+            if(totalChoose==3){
+                setTimeout(() => {
+                    $(".card").css("margin-top","0px")
+                    cerrarMazo()
+                    setTimeout(() => {
+                       $(".card-container").hide();
+                       showCards();
+                       $(".btn-getanswer").show() 
+                    }, 500);
+                }, 500);
+                
+            }
+        }
+
+        async function showCards(){
+            $("#chooseCard").show()
+            $("#chooseCard").html("")
+            x=0;
+            cardsChoose.forEach(e => {
+                console.log(cardsSuffles[e].img)
+                $("#chooseCard").append(`
+                    <div class="card cardShape" style="margin-left:${(x*25+12.5)}%">
+                        <img src="assets/cards/${cardsSuffles[e].img}" style="width:100%">
+                    </div>
+                `)
+                x++
+            });
+        }
+
+
+        async function mezclarCartas(separacion) {
+        x=0;ind=1;acc=0
+        $(".card").each(function(index) {
+            acc=(((((x-20)*(x-20)))*-1)+240)/30
+            console.log(x,ind,acc)
+            $(this).animate({
+                marginTop: acc,
+                marginLeft: separacion * x
+            }, 800); // Ajusta la velocidad de la animación aquí
+            
+            x++;
+
+        });
+        }
+
+        function cerrarMazo(){
+            $(".card").each(function(index) {
+                $(this).animate({
+                    marginLeft: 0
+                }, 100); // Ajusta la velocidad de la animación aquí
+            });
+        }
+
+        function sleep(timeout){
+            return new Promise((resolve, reject) => {
+                setTimeout(() => {
+                    resolve(true)
+                }, timeout);
+            })
+        }
+        function capa(i){
+            $(".capa").hide()
+            $(`.capa_${i}`).show()
+        }
+        
+        
+        totalChoose=0;
+        cardsChoose=[];
+        cardsSuffles=[];
+        capa(1)
+
+        $(window).on("load",async()=>{
+        const response=await fetch('assets/tarot-images.json');
+        const {cards}=await response.json()
+        cardsSuffles=[...cards]; 
+        })
+
+        function consultCard(){
+            cards="";x=1;
+            question=$("#question_form").val()
+            name=$("#name_form").val()
+            capa(0)
+            cardsChoose.forEach(e => {
+                cards+=x+")"+cardsSuffles[e].name+".";
+                x++;
+            });
+            console.log({cards,question})
+            
+            var settings = {
+                "url": "/tarot",
+                "method": "POST",
+                "timeout": 0,
+                "headers": {
+                "Content-Type": "application/json"
+                },
+                "data": JSON.stringify({name,cards,question}),
+            };
+            console.log("Enviando")
+            $.ajax(settings).done(function (r) {
+                console.log(r)
+                $("#reading").html(`
+                <h3>Cards</h3>
+                <p>${r.cards[0].meaning}</p>
+                <p>${r.cards[1].meaning}</p>
+                <p>${r.cards[2].meaning}</p>
+                <h3>Conclusion</h3>
+                <p>${r.resume}</p>
+                `)
+                capa(3)
+            })
+        }
+        
+    </script>
+</body>
+</html>
