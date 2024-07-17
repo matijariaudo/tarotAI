@@ -1,10 +1,9 @@
 const express = require('express');
-const axios = require('axios');
 const path = require('path');
 const { openAI } = require('./openAI');
 
 const app = express();
-const PORT = 3000; 
+const PORT = 8000; 
 
 
 // Middleware para parsear application/json
