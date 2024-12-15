@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
+  <style>
+    .card-container {
+      width:100%;
+      max-width: 100%;
+      display: flex;
+      overflow-x: hidden;
+      height: 170px; /* Ajusta la altura si es necesario */
+      position: relative;
+    }
+
+    .card {
+      min-width: 80px;
+      background-color: #b33030;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      margin-left: -90px; /* Controla cuánto se superponen las cartas */
+    }
+
+    .card:first-child {
+      margin-left: 0;
+    }
+    @media (max-width: 600px) {
+      .card {
+      min-width: 50px;
+      height: 80px;
+      }
+      .card-container {
+        height: 102px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <button onclick="createCardGroup(grupoN,'body');grupoN++;">Crear grupo</button>
+  <script>
+    let grupoN=0;
+    //alert(ancho+" "+anchoCard)
+    $(window).on("load",function() {
+        sizeCards()
+    })
+    $(window).resize(function() {
+        sizeCards()
+    });
+    function sizeCards() {
+        ancho=$(".card-container").width()
+        anchoCard=$(".card").width()
+        margin=-(anchoCard+3)+(ancho-anchoCard)/39+"px";
+        $(".card").css("margin-left",margin)
+        $(".card:first-child").css("margin-left","0px")
+    }
+    function createCardGroup(id,div) {
+        let group = $('<div>', {id: id, class: 'card-container'});
+        for (let i = 0; i < 40; i++) {
+            group.append('<div class="card"></div>');
+        }
+        $(div).append(group); // Añade el nuevo grupo al body
+        sizeCards(group); // Ajusta el tamaño de las cartas en el nuevo grupo
+        var cardChoose=0;
+        var cardChooseData=[]
+        group.find('.card').click(function() {
+            let cardIndex = $(this).index();
+            if(cardChoose<3){
+                console.log("Clic en carta #" + (cardIndex + 1) + " del grupo " + id);
+                cardChooseData.push(cardIndex)
+                $(this).css("margin-top","10px")
+                cardChoose++;
+                if(cardChoose==3){
+                    console.log(cardChooseData)
+                    let event = new CustomEvent("cards", {
+                    detail: { cards: cardChooseData }
+                    });
+                    document.dispatchEvent(event);
+                }
+            }
+            
+        });
+    }
+
+    document.addEventListener("cards", function(event) { // (1)
+    console.log("Hola desde " + JSON.stringify(event.detail.cards)); // Hola desde H1
+    }); 
+    
+  </script>
+</body>
+</html>

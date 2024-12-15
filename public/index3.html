@@ -1,0 +1,664 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#9780C4">
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/material-design-iconic-font/2.2.0/css/material-design-iconic-font.min.css">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Gamja+Flower&display=swap" rel="stylesheet">
+<title>Tarot AI</title>
+<style>
+    .card-container {
+        display: flex;
+        height: 130px;
+    }
+
+    .card {
+        position: absolute;
+    }
+    .card:hover{
+        background-color: #9780C4;
+    }
+
+    .cardShape {
+        min-width: 60px;
+        max-width: 60px; /* Ancho de cada div interno */
+        height: 100px; /* Altura de cada div interno */
+        background-color: #baa8df;
+        border: 1px solid #8b898a;
+        text-align: center;
+        line-height: 100px; /* Alinea verticalmente el texto */
+        box-shadow: 10px 10px 15px -15px rgba(0,0,0,0.15);
+        
+    }
+    .levitar {
+            width: 100px; /* Ajusta el tamaño según sea necesario */
+            animation: levitar 5s ease-in-out infinite;
+    }
+
+    @keyframes levitar {
+        0%, 100% {
+            transform: translateY(0);
+        }
+        50% {
+            transform: translateY(-20px); /* Ajusta la altura del levitamiento */
+        }
+    }
+    .btn-primary{
+        background-color: #9780C4;
+        border: 1px solid #9780C4;
+        border-radius: 100px;
+        
+    }
+    .btn,.btn:hover{
+        background-color: #9780C4;
+        border: 1px solid #9780C4;
+        border-radius: 100px;
+        color:#FFF
+    }
+    .form-control{
+        border-radius: 10px;
+        padding: 10px 20px;
+        border:1px solid #9780C4
+    }
+    body{
+        height: 100svh;
+        overflow-y: auto;
+    }
+    .logo {
+        font-family: "Gamja Flower", sans-serif;
+        font-size: 4em;
+        font-weight: 400;
+        margin-bottom: 10px;
+    }
+    .text_font{
+        font-family: "Gamja Flower", sans-serif;
+        font-size: 1.3em;line-height: 1.1;
+        
+    }
+    
+    .spinner {
+    background-image: linear-gradient(#9780C4 35%,rgb(69, 255, 230));
+    width: 100px;
+    height: 100px;
+    animation: spinning82341 1.7s linear infinite;
+    text-align: center;
+    border-radius: 50px;
+    filter: blur(1px);
+    box-shadow: 0px -5px 20px 0px #9780C4, 0px 5px 20px 0px rgb(77, 255, 190);
+    margin-top: 30vh;
+    }
+
+    .spinner1 {
+    background-color: rgb(255, 255, 255);
+    width: 100px;
+    height: 100px;
+    border-radius: 50px;
+    filter: blur(10px);
+    }
+
+    @keyframes spinning82341 {
+    to {
+        transform: rotate(360deg);
+    }
+    }
+    .custom-progress-bar {
+    background-color: #9780C4; /* Reemplaza con tu color personalizado */
+    }
+    .option-block {
+        height: 75px; /* Ajusta el alto según sea necesario */
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        border: 1px solid #9780C4; /* Añade borde si lo deseas */
+        border-radius: 10px;
+        background-color: #ffffff; /* Color de fondo, ajusta según sea necesario */
+        margin-bottom: 10px; /* Espacio entre los bloques */
+        color:#9780C4;
+        font-size: .9em;
+    }
+    .option-block:hover{
+        background-color: #9780C4;
+        color:#FFF
+    }
+    .option-block p {
+        margin: 0;
+    }
+</style>
+</head>
+<body style="padding: 0px;">
+    
+    <div class="container-fluid m-0 p-0 capa capa_0">
+        <div class="col-12 col-md-6 offset-md-3 col-lg-4 offset-lg-4" style="padding: 10px;">
+            <div class="col-12" style="padding: 10px 0px;text-align: center;text-align: center;">
+                <center>
+                <div class="spinner">
+                    <div class="spinner1"></div>
+                </div>
+                <p style="margin-top: 20px;color: #9780C4;" id="capa_0_txt"></p>
+                </center>
+            </div>
+        </div>
+    </div>
+    <div class="container-fluid m-0 p-0 capa capa_1">
+        <div class="col-12 col-md-4 offset-md-4 col-lg-4 offset-lg-4" style="padding: 10px;">
+            <div class="col-12 col-md-8 offset-md-2 col-lg-8 offset-lg-2" style="padding: 10px 0px;text-align: center;">
+                <div class="col-12" style="padding-top: 30px;">
+                <img class="" src="assets/img/tarotist0.png" style="width:70%;margin-bottom: 10px;">
+                <button data="translate" dataTranslate="100_4" class="btn btn-primary" style="width: 100%;margin-top: 10px;padding-top: 10px;padding-bottom: 10px;" onclick="capa(101);">Tarot Cards <img src="https://cdn-icons-png.flaticon.com/512/1408/1408347.png" style="width: 30px;filter: invert(1);"></button>
+                <button data="translate" dataTranslate="100_4" class="btn btn-primary" style="display: none;width: 100%;margin-top: 10px;background-color: #FFF;border:1px solid #9780C4;color:#9780C4;" onclick="capa(101);">Who are we?</button>
+                <button data="translate" dataTranslate="100_4" class="btn btn-primary" style="display: none;width: 100%;margin-top: 10px;background-color: #FFF;border:1px solid #9780C4;color:#9780C4;" onclick="capa(101);">Contact us</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="container-fluid m-0 p-0 capa capa_101">
+        <div class="col-12 col-md-4 offset-md-4 col-lg-4 offset-lg-4" style="padding: 10px;">
+            <div class="col-12 col-md-8 offset-md-2 col-lg-10 offset-lg-1" style="padding: 10px 0px;text-align: center;">
+                <div class="col-12" style="padding: 30px;">
+                    <h1>Welcome to Your Tarot Reading</h1>
+                    <p>To provide you with a personalized and insightful reading, we need to gather a few details. Your responses will help us tailor the experience to your unique situation. Let's begin!</p>
+                    <button data="translate" dataTranslate="1_2" class="btn btn-primary" style="width: 100%;" onclick="capa(100);seccion('question',1);seccionAdvance()">Start now!</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="container-fluid m-0 p-0 capa capa_100">
+        <div class="col-12 col-md-4 offset-md-4 col-lg-4 offset-lg-4" style="padding: 10px;">
+            <div class="col-12 col-md-8 offset-md-2 col-lg-10 offset-lg-1" style="padding: 10px 0px;text-align: center;">
+                <div class="col-12" style="padding: 30px;">
+                <div class="progress" style="margin: 10px 0px;">
+                <div id="question_advance" class="progress-bar progress-bar-striped custom-progress-bar" role="progressbar" style="width: 0%;" aria-valuemax="100"></div>
+                </div>
+                <h1 class="question question_1">Personal information</h1>
+                <h1 class="question question_2">What area of your life needs guidance?</h1>
+                <h1 class="question question_3">How do you feel emotionally?</h1>
+                <h1 class="question question_4">What type of answer are you seeking?</h1>
+                <h1 class="question question_5">What concerns you most right now?</h1>
+                <h1 class="question question_6">What kind of guidance do you prefer?</h1>
+                <h1 class="question question_7">Any specific question or situation?</h1>
+                <div class="row question question_1">
+                    <p>Name</p>
+                    <input type="text" class="form-control" id="name_form" placeholder="What's your name?" style="margin-bottom: 10px;">
+                    <p>Gender</p>
+                    <div class="col-6 col-md-4 mb-1" style="padding: 4px;">
+                        <div class="option-block option-1" data-question="1" data="1">
+                            <p>Male</p>
+                        </div>
+                    </div>
+                    <div class="col-6 col-md-4 mb-1" style="padding: 4px;">
+                        <div class="option-block option-1" data-question="1" data="2">
+                            <p>Female</p>
+                        </div>
+                    </div>
+                    <div class="col-6 col-md-4 mb-1" style="padding: 4px;">
+                        <div class="option-block option-1" data-question="1" data="3">
+                            <p>Non-Binary</p>
+                        </div>
+                    </div>
+                    <div class="col-6 col-md-4 mb-1" style="padding: 4px;">
+                        <div class="option-block option-1" data-question="1" data="4">
+                            <p>Prefer not to say</p>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-12 mb-1" style="padding: 4px;">
+                        <div class="option-block option-1" data-question="1" data="5" style="padding: 10px 0px;height: auto;">
+                            <p>Other</p>
+                        </div>
+                        <input type="text" class="form-control" placeholder="Specify others">
+                    </div>
+                </div>
+                <div class="row question question_2">
+                    <div class="col-6 col-md-4 mb-1" style="padding: 4px;">
+                        <div class="option-block option-2" data-question="2" data="1">
+                            <p>Work</p>
+                        </div>
+                    </div>
+                    <div class="col-6 col-md-4 mb-1" style="padding: 4px;">
+                        <div class="option-block option-2" data-question="2" data="3">
+                            <p>Relationships</p>
+                        </div>
+                    </div>
+                    <div class="col-6 col-md-4 mb-1" style="padding: 4px;">
+                        <div class="option-block option-2" data-question="2" data="4">
+                            <p>Finances</p>
+                        </div>
+                    </div>
+                    <div class="col-6 col-md-4 mb-1" style="padding: 4px;">
+                        <div class="option-block option-2" data-question="2" data="5">
+                            <p>Health</p>
+                        </div>
+                    </div>
+                    <div class="col-6 col-md-4 mb-1" style="padding: 4px;">
+                        <div class="option-block option-2" data-question="2" data="6">
+                            <p>Family</p>
+                        </div>
+                    </div>
+                    <div class="col-6 col-md-4 mb-1" style="padding: 4px;">
+                        <div class="option-block option-2" data-question="2" data="7">
+                            <p>Personal Growth</p>
+                        </div>
+                    </div>
+                    <div class="col-12 mb-1" style="padding: 4px;">
+                        <div class="option-block option-2" data-question="2" data="8" style="padding: 10px 0px;height: auto;">
+                            <p>Other</p>
+                        </div>
+                        <input type="text" class="form-control" placeholder="Specify others">
+                    </div>
+                    <!-- Añade más bloques si es necesario -->
+                </div>
+                <div class="row question question_3">
+                    <div class="col-6 col-md-4 mb-1" style="padding: 4px;">
+                        <div class="option-block option-3" data-question="3" data="1">
+                            <p>Happy</p>
+                        </div>
+                    </div>
+                    <div class="col-6 col-md-4 mb-1" style="padding: 4px;">
+                        <div class="option-block option-3" data-question="3" data="2">
+                            <p>Anxious</p>
+                        </div>
+                    </div>
+                    <div class="col-6 col-md-4 mb-1" style="padding: 4px;">
+                        <div class="option-block option-3" data-question="3" data="3">
+                            <p>Sad</p>
+                        </div>
+                    </div>
+                    <div class="col-6 col-md-4 mb-1" style="padding: 4px;">
+                        <div class="option-block option-3" data-question="3" data="4">
+                            <p>Confused</p>
+                        </div>
+                    </div>
+                    <div class="col-6 col-md-4 mb-1" style="padding: 4px;">
+                        <div class="option-block option-3" data-question="3" data="5">
+                            <p>Motivated</p>
+                        </div>
+                    </div>
+                    <div class="col-6 col-md-4 mb-1" style="padding: 4px;">
+                        <div class="option-block option-3" data-question="3" data="6">
+                            <p>Down</p>
+                        </div>
+                    </div>
+                    <div class="col-12 mb-1" style="padding: 4px;">
+                        <div class="option-block option-3" data-question="3" data="7"style="padding: 10px 0px;height: auto;">
+                            <p>Other</p>
+                        </div>
+                        <input type="text" class="form-control" placeholder="Specify others">
+                    </div>
+                </div>
+                <div class="row question question_4">
+                    <div class="col-6 col-md-4 mb-1" style="padding: 4px;">
+                        <div class="option-block option-4" data-question="4" data="1">
+                            <p>Clarity</p>
+                        </div>
+                    </div>
+                    <div class="col-6 col-md-4 mb-1" style="padding: 4px;">
+                        <div class="option-block option-4" data-question="4" data="2">
+                            <p>Practical Advice</p>
+                        </div>
+                    </div>
+                    <div class="col-6 col-md-4 mb-1" style="padding: 4px;">
+                        <div class="option-block option-4" data-question="4" data="3">
+                            <p>Spiritual Insight</p>
+                        </div>
+                    </div>
+                    <div class="col-6 col-md-4 mb-1" style="padding: 4px;">
+                        <div class="option-block option-4" data-question="4" data="4">
+                            <p>Comfort</p>
+                        </div>
+                    </div>
+                    <div class="col-6 col-md-4 mb-1" style="padding: 4px;">
+                        <div class="option-block option-4" data-question="4" data="5">
+                            <p>Growth</p>
+                        </div>
+                    </div>
+                    <div class="col-6 col-md-4 mb-1" style="padding: 4px;">
+                        <div class="option-block option-4" data-question="4" data="6">
+                            <p>Confirmation</p>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-12 mb-1" style="padding: 4px;">
+                        <div class="option-block option-4" data-question="4" data="7" style="padding: 10px 0px;height: auto;">
+                            <p>Other</p>
+                        </div>
+                        <input type="text" class="form-control" placeholder="Specify others">
+                    </div>
+                </div>
+                <div class="row question question_5">
+                    <div class="col-6 col-md-4 mb-1" style="padding: 4px;">
+                        <div class="option-block option-5" data-question="5" data="1">
+                            <p>Finances</p>
+                        </div>
+                    </div>
+                    <div class="col-6 col-md-4 mb-1" style="padding: 4px;">
+                        <div class="option-block option-5" data-question="5" data="2">
+                            <p>Relationships</p>
+                        </div>
+                    </div>
+                    <div class="col-6 col-md-4 mb-1" style="padding: 4px;">
+                        <div class="option-block option-5" data-question="5" data="3">
+                            <p>Career</p>
+                        </div>
+                    </div>
+                    <div class="col-6 col-md-4 mb-1" style="padding: 4px;">
+                        <div class="option-block option-5" data-question="5" data="4">
+                            <p>Health</p>
+                        </div>
+                    </div>
+                    <div class="col-6 col-md-4 mb-1" style="padding: 4px;">
+                        <div class="option-block option-5" data-question="5" data="5">
+                            <p>Self-Esteem</p>
+                        </div>
+                    </div>
+                    <div class="col-6 col-md-4 mb-1" style="padding: 4px;">
+                        <div class="option-block option-5" data-question="5" data="6">
+                            <p>Work-Life Balance</p>
+                        </div>
+                    </div>
+                    <div class="col-12 mb-1" style="padding: 4px;">
+                        <div class="option-block option-5" data-question="5" data="7"style="padding: 10px 0px;height: auto;">
+                            <p>Other</p>
+                        </div>
+                        <input type="text" class="form-control" placeholder="Specify others">
+                    </div>
+                </div>
+                <div class="row question question_6">
+                    <div class="col-6 col-md-4 mb-1" style="padding: 4px;">
+                        <div class="option-block option-6" data-question="6" data="1">
+                            <p>Practical</p>
+                        </div>
+                    </div>
+                    <div class="col-6 col-md-4 mb-1" style="padding: 4px;">
+                        <div class="option-block option-6" data-question="6" data="2">
+                            <p>Reflective</p>
+                        </div>
+                    </div>
+                    <div class="col-6 col-md-4 mb-1" style="padding: 4px;">
+                        <div class="option-block option-6" data-question="6" data="3">
+                            <p>Relational</p>
+                        </div>
+                    </div>
+                    <div class="col-6 col-md-4 mb-1" style="padding: 4px;">
+                        <div class="option-block option-6" data-question="6" data="4">
+                            <p>Inspirational</p>
+                        </div>
+                    </div>
+                    <div class="col-6 col-md-4 mb-1" style="padding: 4px;">
+                        <div class="option-block option-6" data-question="6" data="5">
+                            <p>Spiritual</p>
+                        </div>
+                    </div>
+                    <div class="col-6 col-md-4 mb-1" style="padding: 4px;">
+                        <div class="option-block option-6" data-question="6" data="6">
+                            <p>Motivational</p>
+                        </div>
+                    </div>
+                    <div class="col-12 mb-1" style="padding: 4px;">
+                        <div class="option-block option-6" data-question="6" data="7" style="padding: 10px 0px;height: auto;">
+                            <p>Other</p>
+                        </div>
+                        <input type="text" class="form-control" placeholder="Specify others">
+                    </div>
+                </div>
+                <textarea placeholder="Enter your concern here" class="form-control question question_7" rows="7" name="" id="question_form" style="width: 100%;margin-bottom: 20px;border-radius: 20px;"></textarea>
+                
+                <div class="row">
+                <button data="translate" dataTranslate="100_4" class="btn col-6" style="margin-top: 10px;" onclick="seccion('question',seccion_act-1);seccionAdvance()"><i class="zmdi zmdi-arrow-left"></i>Back</button>
+                <button data="translate" dataTranslate="100_4" class="btn col-6" style="margin-top: 10px;" onclick="seccion('question',seccion_act+1);seccionAdvance()">Next<i class="zmdi zmdi-arrow-right"></i></button>
+                </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="container-fluid m-0 p-0 capa capa_102">
+        <div class="col-12 col-md-4 offset-md-4 col-lg-4 offset-lg-4" style="padding: 10px;">
+            <div class="col-12 col-md-8 offset-md-2 col-lg-8 offset-lg-2" style="padding: 10px 0px;text-align: center;">
+                <button class="btn" style="color:#000;border: 1px solid #ffffff;background-color: #FFF;border-radius: 100px;float: left;" onclick="capa(100);seccion('question',7)"><i class="zmdi zmdi-arrow-left"></i> Back</button>
+                <div class="col-12" style="padding-top: 40px;">
+                <img class="" src="assets/img/tarotist2.png" style="width:100%;">
+                 </div>
+                <h1>Choose your cards (3)</h1>
+             </div>
+            <div class="card-container col-12"  style="padding: 20px 10px;display: none;min-height: 120px;">
+                <!-- Fin de repetición -->
+            </div>
+            <div class="col-12" id="chooseCard" data="translate" dataTranslate="2_2" style="padding: 20px 10px;text-align: center;display: none;min-height: 170px;">
+                Selected cards
+            </div>
+            <button class="btn btn-primary btn-getanswer" style="width: 100%;display: none;margin-bottom: 10px;" onclick="capa(3);consultCard()">Get your answer now</button>
+        </div>
+    </div>
+
+    <div class="container-fluid m-0 p-0 capa capa_103">
+        <div class="col-12 col-md-8 offset-md-2 col-lg-8 offset-lg-2" style="padding: 10px;">
+            <div class="col-12 col-md-8 offset-md-2 col-lg-8 offset-lg-2" style="padding: 10px 0px;text-align: center;">
+                <div class="col-12" style="padding-top: 30px;">
+                <h1 class="logo">Tarot<b style="color: #9780C4;font-weight: 500;">Gpt</b></h1>
+                <img class="" src="assets/img/tarotist4.png" style="width:70%;max-width: 280px;">
+                </div>
+                <h3  data="translate" dataTranslate="2_1" class="text_font">Your fortune</h3>
+             </div>
+            <div class="col-12 text_font" id="reading" style="padding: 0px 15px;">
+                <!-- Fin de repetición -->
+            </div>
+            <button class="btn btn-primary" data="translate" dataTranslate="3_2" style="width: 100%;" onclick="capa(1);$('#name_form').val('');$('#question_form').val('');">Start again</button>
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        function initCards(){
+            $(".btn-getanswer").hide() 
+            total=40;
+            totalChoose=0;
+            cardsChoose=[]
+            $("#chooseCard").hide()
+            $("#chooseCard").html("")
+            $(".card-container").html("");
+            $(".card-container").show();
+            ancho=$(".card-container").width()
+            $(".card-container").append(`
+            <div class="card cardShape" data="0" onclick="move(this)"></div>
+            `)
+            anchoCard=$(".card").width()
+            separacion=(ancho-anchoCard)/(total-1);
+            for (let x = 1; x < (total); x++) {
+                $(".card-container").append(`
+                <div class="card cardShape" style="margin-left:0px" data="${x}" onclick="move(this)"></div>
+                `)
+            }
+            mezclarCartas(separacion)
+        }
+
+        function move(e){
+            if(totalChoose<3){
+            $(e).css("margin-top","20px")
+            totalChoose++;
+            cardsChoose.push($(e).attr('data'))
+            }
+            if(totalChoose==3){
+                setTimeout(() => {
+                    $(".card").css("margin-top","0px")
+                    cerrarMazo()
+                    setTimeout(() => {
+                       $(".card-container").hide();
+                       showCards();
+                    }, 500);
+                }, 500);
+                
+            }
+        }
+
+        async function showCards(){
+            $("#chooseCard").show()
+            $("#chooseCard").html("")
+            ancho=$("#chooseCard").width()/4
+            x=1;
+            setTimeout(() => {
+                $(".btn-getanswer").show() 
+            }, 1200);
+            cardsChoose.forEach(e => {
+                const fijar=x*ancho-40;
+                const imgPegar=cardsSuffles[e].img;
+                setTimeout(() => {
+                    $("#chooseCard").append(`
+                    <div class="card levitar" style="margin-left:${fijar}px;width:80px">
+                        <img src="assets/cards/${imgPegar}" style="width:100%;border:3px solid #9780C4;border-radius:3px">
+                    </div>
+                `)
+                }, 300*x);
+                x++
+            });
+        }
+
+
+        async function mezclarCartas(separacion) {
+        x=0;ind=1;acc=0
+        $(".card").each(function(index) {
+            acc=(((((x-20)*(x-20)))*-1)+240)/30
+            console.log(x,ind,acc)
+            $(this).animate({
+                marginTop: 0,
+                marginLeft: separacion * x
+            }, 800); // Ajusta la velocidad de la animación aquí
+            
+            x++;
+
+        });
+        }
+
+        function cerrarMazo(){
+            $(".card").each(function(index) {
+                $(this).animate({
+                    marginLeft: 0
+                }, 100); // Ajusta la velocidad de la animación aquí
+            });
+        }
+
+        function sleep(timeout){
+            return new Promise((resolve, reject) => {
+                setTimeout(() => {
+                    resolve(true)
+                }, timeout);
+            })
+        }
+
+        loadingTxt=[
+            'Analyzing your cards',
+            'Analyzing your questions',
+            'Understanding the situation',
+            'Reading your fortune'
+        ]
+
+        txtCapa=()=>{
+            loadingTxt.forEach( (e,i) => {
+                setTimeout(() => {
+                    $("#capa_0_txt").html(e+"..")
+                }, i*2000);
+            });
+        }
+        
+        function capa(i){
+            $(".capa").hide()
+            $(`.capa_${i}`).show()
+            if(i==0){$("#capa_0_txt").html("")}
+        }
+
+        seccion_act=1
+        function seccion(name,i){
+            $(`.${name}`).hide()
+            $(`.${name}_${i}`).show()
+            seccion_act=i
+        }
+
+        optionSelected=[]
+        function seccionAdvance() {
+            console.log(seccion_act)
+            if(optionSelected[seccion_act-2]==undefined && (seccion_act-1)>0 && seccion_act<7){seccion('question',seccion_act-1);return true}
+            if(seccion_act==0){capa(1);seccion_act=1;return}
+            if(seccion_act==8){capa(102);initCards();seccion_act=7;return}
+            $("#question_advance").html(seccion_act+"/7")
+            $("#question_advance").css("width",(100/7*seccion_act)+"%")
+        }
+        $(".option-block").on("click",function () {
+            questionNro=$(this).attr("data-question");
+            questionAnswer=$(this).attr("data");
+            $(`.option-${questionNro}`).css("background","#FFF");
+            $(`.option-${questionNro}`).css("color","#9780C4");
+            $(this).css("background","#9780C4");
+            $(this).css("color","#FFF");
+            value=$(this).find("p").eq(0).html();
+            question=$(".question_"+questionNro).html()
+            if(questionNro==1){question="Gender: "}
+            optionSelected[questionNro-1]={optSelected:questionAnswer,optValue:value,question}
+            console.log(userInfoExtract())
+          })
+
+        function userInfoExtract(){
+            userInfo="";
+            optionSelected.forEach(e => {
+                userInfo+=`${e.question} ${e.optValue}.`
+            });
+            return userInfo;
+        }
+        
+
+        totalChoose=0;
+        cardsChoose=[];
+        cardsSuffles=[];
+        capa(1)
+
+        $(window).on("load",async()=>{
+        const response=await fetch('assets/tarot-images.json');
+        const {cards}=await response.json()
+        cardsSuffles=[...cards]; 
+        })
+
+        function consultCard(){
+            cards="";x=1;
+            question=$("#question_form").val()
+            name=$("#name_form").val()
+            userInfo=userInfoExtract();
+            capa(0)
+            txtCapa()
+            cardsChoose.forEach(e => {
+                cards+=x+")"+cardsSuffles[e].name+".";
+                x++;
+            });
+            console.log({name,cards,question,userInfo})
+            var settings = {
+                "url": "/tarot",
+                "method": "POST",
+                "timeout": 0,
+                "headers": {
+                "Content-Type": "application/json"
+                },
+                "data": JSON.stringify({name,cards,question,userInfo}),
+            };
+            console.log("Enviando")
+            $.ajax(settings).done(function (r) {
+                console.log(r)
+                $("#reading").html(`
+                <h1 style="text-align:center;color:#9780C4">What do your letters say?</h1>
+                <p><img src="assets/cards/${cardsSuffles[cardsChoose[0]].img}" style="margin:5px;float:left;width:70px"> ${r.cards[0].meaning}</p>
+                <p><img src="assets/cards/${cardsSuffles[cardsChoose[1]].img}" style="margin:5px;float:left;width:70px"> ${r.cards[1].meaning}</p>
+                <p><img src="assets/cards/${cardsSuffles[cardsChoose[2]].img}" style="margin:5px;float:left;width:70px"> ${r.cards[2].meaning}</p>
+                <h1 style="text-align:center;color:#9780C4">In summary..</h1>
+                <p>${r.resume}</p>
+                `)
+                capa(103)
+            })
+        }
+
+        
+        
+    </script>
+</body>
+</html>

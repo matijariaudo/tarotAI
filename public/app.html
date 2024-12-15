@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat con Barra Lateral</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/material-design-iconic-font/2.2.0/css/material-design-iconic-font.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <style>
+        :root{
+            --PurpleColor:#9780C4;
+        }
+
+        body {
+            background-color: #f8f9fa;
+        }
+        .sidebar {
+            background-color: var(--PurpleColor);
+            color: white;
+            height: 100vh;
+            padding: 20px;
+        }
+        .chat-container {
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        .chat-box {
+            flex-grow: 1;
+            overflow-y: auto;
+            padding: 20px;
+            background-color: #fff;
+            border: 0px solid #dee2e6;
+            border-radius: 5px;
+        }
+        .chat-message {
+            margin-bottom: 10px;
+            padding: 10px;
+            border-radius: 5px;
+        }
+        .profile-pic {
+            width: 45px;
+            height: 45px;
+            border-radius: 4px;
+            background-size: cover;
+            background-position: center;
+            margin:-10px 10px 0 10px;
+            border:1px solid #eeeeee;
+        }
+
+        .bot-pic {
+            background-image: url('https://cdn-icons-png.flaticon.com/512/6785/6785901.png'); /* URL de la imagen del bot */
+        }
+
+        .user-pic {
+            background-image: url('https://cdn-icons-png.freepik.com/256/6645/6645221.png?semt=ais_hybrid'); /* URL de la imagen del usuario */
+        }
+
+        .chat-message.bot {
+            background-color: #e9ecef;
+            align-self: flex-start;
+            width: 80%;
+            margin-left: 0;
+            margin-right: auto;
+        }
+
+        .chat-message.user {
+            background-color: var(--PurpleColor);
+            color: white;
+            align-self: flex-end;
+            width: 80%;
+            margin-left: auto;
+            margin-right: 0;
+        }
+        .input-group {
+            margin-top: 0px;
+            padding: 10px;
+            background: #FFF;
+        }
+        .input-group button{
+            background: var(--PurpleColor);
+            color:#FFF
+        }
+        .card-container {
+            width:90%;
+            max-width: 100%;
+            display: flex;
+            overflow-x: hidden;
+            height: 100px; /* Ajusta la altura si es necesario */
+            position: relative;
+        }
+
+        .card {
+            min-width: 50px;
+            height: 80px;
+            background-color: #9780C4;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            margin-left: -90px; /* Controla cuánto se superponen las cartas */
+        }
+
+        .card:first-child {
+            margin-left: 0;
+        }
+        @media (max-width: 600px) {
+            .card {
+            min-width: 60px;
+            height: 100px;
+            }
+            .card-container {
+            height: 122px;
+            }
+            .card-container {
+                width:100%;
+            }
+        }
+        
+    </style>
+    <link rel="stylesheet"  href="assets/cards/cards.css">
+    
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Barra lateral visible solo en pantallas grandes -->
+            <div class="col-lg-3 d-none d-lg-block sidebar">
+                <h4>
+                    <img src="https://cdn-icons-png.flaticon.com/512/2809/2809546.png" alt="" style="width: 40px;filter: invert(1);">
+                    TarotAi</h4>
+                <p>Your Old Chats</p>
+            </div>
+            
+            <!-- Área del chat -->
+            <div class="col-lg-9 col-12 chat-container p-0">
+                <div class="chat-box">
+                    
+                </div>
+                <div class="input-group" onclick="">
+                    <input type="text" class="form-control  text-send" placeholder="Escribe un mensaje...">
+                    <button class="btn btn-send" type="button">Enviar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"></script>
+    <script src="assets/cards/cards.js"></script>
+    <script>
+        const addChat=(u,text,id)=>{
+            $(".chat-box").append(`
+                <div class="d-flex align-items-center justify-content-end mb-3">
+                    ${u?'':'<div class="profile-pic bot-pic"></div>'}
+                    <div class="chat-message ${u?'user':'bot'}" id="${id}">
+                        <strong>${u?'You: ':'Fortune Teller: '}</strong> ${text}
+                    </div>
+                    ${u?'<div class="profile-pic user-pic"></div>':''}
+                </div>
+            `)
+        }
+        $('.btn-send').on('click',function(){
+            newChat('question',{question:$(".text-send").val()},true)
+            chatHistorial.push({type:'question',content:{question:$(".text-send").val()},user:true})
+            $(".text-send").val("")
+            sendChat()
+        })
+
+        cardsSuffles=[];
+        $(window).on("load",async()=>{
+        const response=await fetch('assets/tarot-images.json');
+        const {cards}=await response.json()
+        cardsSuffles=[...cards];
+        })
+        
+        function suffle() {
+            for (let i = cardsSuffles.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1)); // Elegir un índice aleatorio
+                [cardsSuffles[i], cardsSuffles[j]] = [cardsSuffles[j], cardsSuffles[i]]; // Intercambiar posiciones
+            }
+        }
+
+        ch=0
+        //Type question(user/ai),choose(ai),tarot(ai),cards(user)
+        chatHistorial=[]
+        function newChat(type,content,user=false){
+            switch (type) {
+                case "question":
+                    const {question}=content;
+                    addChat(user,question,`ch${ch}`)
+                break;
+                case "choose":
+                    const {qty,phrase}=content;
+                    addChat(user,`${phrase?phrase:"Choose 3 cards!"}`,`ch${ch}`)
+                    createCardGroup(`#ch${ch}`);
+                break;
+                case "tarot":
+                    const {cards,resume}=content;
+                    html=``
+                    cards.forEach(e => {
+                        html+=`<div class="col-12" style="">
+                        <b>${e.nameCard}:</b>${e.meaning}
+                        </p>`
+                       
+                    });
+                    html+=`<p>${resume}</p>`
+                    addChat(user,html,`ch${ch}`);
+                break;
+                case "cards":
+                    const {cardsSelected}=content;
+                    html=`<div class="row">`
+                    cardsSelected.forEach(e => {
+                        html+=`<div class="col-2" style="text-align:center">
+                            <img src="assets/cards/${e.img}" style="width:80%">
+                            </div>`
+                    });
+                    html+="</div>"
+                    addChat(user,html,`ch${ch}`);
+                break;
+            }
+            ch++;
+        }
+
+
+        //createCardGroup(1,"#er1",[0,13,4]);
+        //newChat('question',{question:'Hi, how can I help u?'})
+        //chatHistorial.push({type:'question',content:{question:'Hi, how can I help u?'},user:false})
+        //newChat('choose',{qty:3})
+        sendChat()
+
+        function sendChat(){
+            const historySend=chatHistorial.map(a=>{
+                //Type question(user/ai),choose(ai),tarot(ai),cards(user)
+                let content;
+                switch(a.type){
+                    case "question":
+                        content=a.content.question;
+                    break;
+                    case "choose":
+                        content=a.content.phrase;
+                    break;
+                    case "tarot":
+                        content="Reading: ";
+                        a.content.cards.forEach(e => {
+                            content+=`${e.nameCard}:${e.meaning}//`;
+                        });
+                        content+=`Resume: ${a.content.resume}`;
+                    break;
+                    case "cards":
+                        content="Selected Cards:";
+                        a.content.cardsSelected.forEach(e => {
+                            content+=`${e.name}//`;
+                        });
+                    break;
+                }
+                return {role:a.user?"user":"assistant",content}
+            })
+            console.log(historySend)
+            var settings = {
+                "url": "/tarotAI",
+                "method": "POST",
+                "timeout": 0,
+                "headers": {
+                "Content-Type": "application/json"
+                },
+                "data": JSON.stringify({historySend}),
+            };
+            console.log("Enviando")
+            $.ajax(settings).done(function (r) {
+                console.log(r)
+                newChat(r.type,r.answer)
+                chatHistorial.push({type:r.type,content:r.answer,user:false})
+            })
+        }
+
+        document.addEventListener("cards", function(event) { // (1)
+            console.log(event.detail.cards)
+            suffle();
+            cardsSelected=[];
+            event.detail.cards.forEach(e=> {
+                cardsSelected.push({name:cardsSuffles[e].name,img:cardsSuffles[e].img})
+            });
+            newChat('cards',{cardsSelected},true)
+            chatHistorial.push({type:'cards',content:{cardsSelected},user:true})
+            sendChat()
+        }); 
+        
+
+    </script>
+</body>
+</html>
